@@ -102,6 +102,14 @@ specs['ADSREnv'] = {
 	Gate = ControlSpec.new(0, 1, "linear", 1, 0, "")
 }
 
+specs['ADSREnv2'] = {
+	Attack = ControlSpec.new(0.1, 2000, "exp", 0, 5, "ms"),
+	Decay = ControlSpec.new(0.1, 8000, "exp", 0, 200, "ms"),
+	Sustain = ControlSpec.new(0, 1, "linear", 0, 0.5, ""),
+	Release = ControlSpec.new(0.1, 8000, "exp", 0, 200, "ms"),
+	Gate = ControlSpec.new(0, 1, "linear", 1, 0, "")
+}
+
 specs['Amp'] = {
 	Level = ControlSpec.UNIPOLAR
 }
@@ -196,7 +204,7 @@ specs['FShift'] = {
 
 specs['FreqGate'] = {
 	Frequency = ControlSpec.FREQ,
-	Gate = ControlSpec.new(0, 1, "linear", 1, 0, "")
+	Gate = ControlSpec.PAN
 }
 
 specs['HPFilter'] = {
@@ -488,9 +496,10 @@ end
 function util.make_param(modulename, module, param, polyphony, controlspecoptions, name, paramformatter, paramparamset) -- added by @andrew
   polyphony = polyphony or 1
   paramparamset = paramparamset or params
-  paramcontrolspec = R.specs[module][param]
+  local paramcontrolspec = R.specs[module][param]
   
   name = name or modulename .. " " .. param
+  local id = string.lower(modulename) .. "_" .. string.lower(param)
   
   if controlspecoptions then
     paramcontrolspec = r.specs[module][param]:copy()
@@ -500,33 +509,27 @@ function util.make_param(modulename, module, param, polyphony, controlspecoption
     end
   end
   
+  local paramaction
   if polyphony > 1 then
-    local id = string.lower(modulename) .. "_" .. string.lower(param)
-    
     engine.newmacro(id, r.util.poly_expand(modulename .. "." .. param, polyphony))
     
-    paramparamset:add{
-      type="control",
-      id=id,
-      name=name,
-      controlspec=paramcontrolspec,
-      formatter=paramformatter,
-      action=function (value)
-        engine.macroset(id, value)
-      end
-    }
+    paramaction=function (value)
+      engine.macroset(id, value)
+    end
   else
-    paramparamset:add{
-      type="control",
-      id=id,
-      name=name,
-      controlspec=paramcontrolspec,
-      formatter=paramformatter,
-      action=function (value)
-        engine.set(modulename .. "." .. param, value)
-      end
-    }
+    paramaction=function(value)
+      engine.set(modulename .. "." .. param, value)
+    end
   end
+  
+  paramparamset:add{
+    type="control",
+    id=id,
+    name=name,
+    controlspec=paramcontrolspec,
+    formatter=paramformatter,
+    action=paramaction
+  }
 end
 
 R.specs = specs

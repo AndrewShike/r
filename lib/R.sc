@@ -1970,7 +1970,8 @@ RAmplifierModule : RModule {
 
 			Out.ar(
 				out_Out,
-				sig_In * (param_Level + sig_Lin.clip(0, 0.5) + curveSpec.map(sig_Exp).clip(0, 0.5)).clip(0, 0.5)
+				//sig_In * (param_Level + sig_Lin.clip(0, 0.5) + curveSpec.map(sig_Exp).clip(0, 0.5)).clip(0, 0.5) removed by @andrew
+				sig_In * (param_Level + sig_Lin + curveSpec.map(sig_Exp))
 			);
 		}
 	}
@@ -2476,7 +2477,7 @@ RADSREnvelopeModule : RModule {
 				Spec: ControlSpec(0.1, 8000, 'exp', 0, 200, "ms"),
 				LagTime: 0.1
 			),
-			'Gate' -> ControlSpec(0, 1, step: 1, default: 0) // TODO: DRY the gate/reset/boolean specs
+			'Gate' -> \bipolar.asSpec // TODO: DRY the gate/reset/boolean specs
 //			'Curve' -> ControlSpec(-10, 10, 'lin', -4), TODO
 		]
 	}
@@ -2503,7 +2504,8 @@ RADSREnvelopeModule : RModule {
 				EnvGen.ar(
 					Env.adsr(param_Attack/1000, param_Decay/1000, param_Sustain, param_Release/1000, curve: curve),
 					// TODO ((sig_Gate > 0) + (param_Gate > 0)) > 0,
-					((sig_Gate > 0) + (K2A.ar(param_Gate) > 0)) > 0, // TODO: Is K2A really needed?
+					//((sig_Gate > 0) + (K2A.ar(param_Gate) > 0)) > 0, // TODO: Is K2A really needed?
+					param_Gate - 0.1,
 					levelScale: 0.8 // TODO: ~ 8 V
 				)
 			);
@@ -2692,7 +2694,7 @@ RFreqGateModule : RModule {
 	*params {
 		^[
 			'Frequency' -> \freq.asSpec,
-			'Gate' -> ControlSpec(0, 1, step: 1, default: 0) // TODO: DRY the gate/reset/boolean specs
+			'Gate' -> \bipolar.asSpec // TODO: DRY the gate/reset/boolean specs
 		]
 	}
 
