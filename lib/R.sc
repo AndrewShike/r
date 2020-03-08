@@ -2462,11 +2462,11 @@ RADSREnvelopeModule : RModule {
 	*params {
 		^[
 			'Attack' -> (
-				Spec: ControlSpec(0.1, 2000, 'exp', 0, 5, "ms"),
+				Spec: ControlSpec(0.1, 4000, 'exp', 0, 5, "ms"),
 				LagTime: 0.1
 			),
 			'Decay' -> (
-				Spec: ControlSpec(0.1, 8000, 'exp', 0, 200, "ms"),
+				Spec: ControlSpec(0.1, 12000, 'exp', 0, 200, "ms"),
 				LagTime: 0.1
 			),
 			'Sustain' -> (
@@ -2474,7 +2474,7 @@ RADSREnvelopeModule : RModule {
 				LagTime: 0.1
 			),
 			'Release' -> (
-				Spec: ControlSpec(0.1, 8000, 'exp', 0, 200, "ms"),
+				Spec: ControlSpec(0.1, 12000, 'exp', 0, 200, "ms"),
 				LagTime: 0.1
 			),
 			'Gate' -> \bipolar.asSpec // TODO: DRY the gate/reset/boolean specs
