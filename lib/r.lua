@@ -493,10 +493,11 @@ function util.split_ref(ref)
   return words[1], words[2]
 end
 
-function util.make_param(modulename, module, param, polyphony, controlspecoptions, name, paramformatter, paramparamset) -- added by @andrew
+function util.make_param(modulename, module, param, polyphony, controlspecoptions, name, event, paramformatter, paramparamset) -- added by @andrew
   polyphony = polyphony or 1
   paramparamset = paramparamset or params
   local paramcontrolspec = R.specs[module][param]
+  event = function() end or event
   
   name = name or modulename .. " " .. param
   local id = string.lower(modulename) .. "_" .. string.lower(param)
@@ -515,6 +516,7 @@ function util.make_param(modulename, module, param, polyphony, controlspecoption
     
     paramaction=function (value)
       engine.macroset(id, value)
+      event(value)
     end
   else
     paramaction=function(value)

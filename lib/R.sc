@@ -2474,7 +2474,7 @@ RADSREnvelopeModule : RModule {
 				LagTime: 0.1
 			),
 			'Release' -> (
-				Spec: ControlSpec(0.1, 12000, 'exp', 0, 200, "ms"),
+				Spec: ControlSpec(0.1, 18000, 'exp', 0, 200, "ms"),
 				LagTime: 0.1
 			),
 			'Gate' -> \bipolar.asSpec // TODO: DRY the gate/reset/boolean specs
@@ -4258,7 +4258,7 @@ RSlewModule : RModule {
 
 			Out.ar(
 				out_Out,
-				Lag.ar(sig_In, param_Time)
+				Lag3.ar(sig_In, param_Time)
 			);
 		}
 	}
