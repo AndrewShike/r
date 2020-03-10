@@ -2521,7 +2521,7 @@ RADSREnvelope2Module : RModule {
 	*params {
 		^[
 			'Attack' -> (
-				Spec: ControlSpec(0.1, 2000, 'exp', 0, 5, "ms"),
+				Spec: ControlSpec(0.1, 8000, 'exp', 0, 5, "ms"),
 				LagTime: 0.1
 			),
 			'Decay' -> (
@@ -2558,7 +2558,9 @@ RADSREnvelope2Module : RModule {
 			var sig_Retrig = In.ar(in_Retrig);
 			var curve = -4; // TODO: default is -4, exp approximation -13.81523 !?
 
-			var gate = (sig_Gate > 0) + ((-1)*Trig1.ar(sig_Retrig, 1/SampleRate.ir));
+			//var gate = (sig_Gate > 0) + ((-1 - (sig_Gate > 0))*Trig1.ar(sig_Retrig, 1/SampleRate.ir));
+			//var gate = sig_Gate + ((-2)*Trig1.ar(sig_Retrig, 0.1));
+			var gate = (sig_Gate > 0) + ((-1.01 - (sig_Gate > 0)) * Trig1.ar((sig_Retrig <= 0), 0.011)) + (sig_Retrig > 0);
 			Out.ar(
 				out_Out,
 				EnvGen.ar(
@@ -2567,7 +2569,7 @@ RADSREnvelope2Module : RModule {
 					// ((sig_Gate > 0) + (K2A.ar(param_Gate) > 0)) > 0,
 					gate,
 					levelScale: 0.8 // TODO: ~ 8 V
-				)
+				)// * (sig_Retrig <= 0)
 			);
 		}
 	}
